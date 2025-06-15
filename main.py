@@ -92,23 +92,23 @@ async def fetch_race_odds(event, api_key):
             response = await client.get(URLs.EVENT_INFO_URL, params=params)
             response.raise_for_status()
             event_data = response.json()
-
-        race_track = event_data.get('venueName', '')
-        race_num = race_data.get('eventName', '').split(" ")[-1] if race_data.get('eventName', '') else ''
-        distance = event_data.get('distance', '')
-        track_cond = event_data.get('distanceTrackCondition', '').split(", ")[-1] if event_data.get('distanceTrackCondition', '') else ''
-        class_info = event_data.get('groupType', '')
-        prize = event_data.get('prizeMoney', '')
-        weather = event_data.get('weather', '')
-        race_time = convert_to_aest(race_data.get('startTime', ''))
+        default = "N/A"
+        race_track = event_data.get('venueName', default)
+        race_num = race_data.get('eventName', '').split(" ")[-1] if race_data.get('eventName', default) else default
+        distance = event_data.get('distance', default)
+        track_cond = event_data.get('distanceTrackCondition', default).split(", ")[-1] if event_data.get('distanceTrackCondition', default) else default
+        class_info = event_data.get('groupType', default)
+        prize = event_data.get('prizeMoney', default)
+        weather = event_data.get('weather', default)
+        race_time = convert_to_aest(race_data.get('startTime', default))
 
         for participant in race_data.get('selections', []):
             try:
-                horse_name = participant.get('name', '')
+                horse_name = participant.get('name', default)
                 horse_num = participant.get('competitorNumber', 0)
                 barrier = participant.get('barrierNumber', 0)
-                jockey_name = participant.get('jockeyName', '')
-                jockey_weight = participant.get('weight', '')
+                jockey_name = participant.get('jockeyName', default)
+                jockey_weight = participant.get('weight', 0.0)
 
                 best_odds_obj = max(
                     filter(
@@ -122,7 +122,7 @@ async def fetch_race_odds(event, api_key):
                     default=None
                 )
                 best_odds = best_odds_obj.get("odds", 0.0) if best_odds_obj else 0.0
-                odds_source = best_odds_obj.get("bookmaker", "") if best_odds_obj else ""
+                odds_source = best_odds_obj.get("bookmaker", default) if best_odds_obj else default
 
                 rows.append(
                     RaceDataRow(
