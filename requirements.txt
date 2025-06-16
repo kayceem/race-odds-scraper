@@ -30,6 +30,8 @@ pyee==13.0.0
     # via playwright
 python-dotenv==1.1.0
     # via race-odds (pyproject.toml)
+pytz==2025.2
+    # via race-odds (pyproject.toml)
 sniffio==1.3.1
     # via anyio
 typing-extensions==4.14.0
