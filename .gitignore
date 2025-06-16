@@ -13,3 +13,4 @@ odds_csv
 
 .env
 *.csv
+*.zip
