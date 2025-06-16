@@ -1,6 +1,7 @@
 $ProjectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VenvPath = Join-Path $ProjectDir "venv"
 $PythonExe = Join-Path $VenvPath "Scripts\python.exe"
+$PlaywrightExe = Join-Path $VenvPath "Scripts\playwright.exe"
 $ScriptPath = Join-Path $ProjectDir "main.py"
 $Requirements = Join-Path $ProjectDir "requirements.txt"
 $EnvExamplePath = Join-Path $ProjectDir ".env_example"
@@ -32,6 +33,19 @@ if (!(Test-Path $EnvPath) -and (Test-Path $EnvExamplePath)) {
 if (!(Test-Path $ScriptPath)) {
     Write-Error "Selected script does not exist: $ScriptPath"
     exit 1
+}
+if (!(Test-Path $PlaywrightExe)) {
+    Write-Error "Playwright executable not found in virtual environment: $PlaywrightExe"
+    exit 1
+}
+else{
+    Write-Host "Setting up Playwright browsers..."
+    & $PlaywrightExe install
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to install Playwright browsers."
+        exit 1
+    }
+    Write-Host "Playwright browsers installed successfully.`n"
 }
 
 $addToScheduler = Read-Host "`nDo you want to schedule this script to run daily via Task Scheduler? (y/n)"

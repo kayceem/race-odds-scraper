@@ -152,7 +152,7 @@ async def fetch_race_odds(event, api_key):
         return None
         
 def save_to_csv(rows, output_dir):
-    output_path = f"{output_dir}/{get_today_str()}.csv"
+    output_path = f"{output_dir}/{get_today_str()}_Race_Data.csv"
     try:
         if not rows:
             return
@@ -166,9 +166,9 @@ def save_to_csv(rows, output_dir):
 
 async def scrape():
     try:
-        output_dir = os.getenv("OUTPUT_DIR", "odds_csv")
+        output_dir = os.getenv("OUTPUT_DIR", "odds_csv") or "odds_csv"
         os.makedirs(output_dir, exist_ok=True)
-
+        interval = int(os.getenv("SCRAPE_INTERVAL", 5) or 5)
         events, api_key = await fetch_events()
         if not events or not api_key:
             return
@@ -179,7 +179,7 @@ async def scrape():
                 continue
             rows.extend(event_rows)
             save_to_csv(rows, output_dir)
-            time.sleep(random.uniform(1, 5))
+            time.sleep(random.uniform(2, interval))
     except Exception as e:
         logger.error(f"Error during scraping: {e}")
         return
