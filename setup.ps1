@@ -1,6 +1,7 @@
 $ProjectDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $VenvPath = Join-Path $ProjectDir "venv"
 $PythonExe = Join-Path $VenvPath "Scripts\python.exe"
+$PythonExeW = Join-Path $VenvPath "Scripts\pythonw.exe"
 $PlaywrightExe = Join-Path $VenvPath "Scripts\playwright.exe"
 $ScriptPath = Join-Path $ProjectDir "main.py"
 $Requirements = Join-Path $ProjectDir "requirements.txt"
@@ -13,6 +14,10 @@ if (!(Test-Path $VenvPath)) {
     python -m venv $VenvPath
     if (!(Test-Path $PythonExe)) {
         Write-Error "Failed to create virtual environment."
+        exit 1
+    }
+    if (!(Test-Path $PythonExeW)) {
+        Write-Error "Failed to create pythonw.exe in virtual environment."
         exit 1
     }
 } else {
@@ -61,6 +66,7 @@ if (-not ($ScheduledTime -match '^\d{1,2}:\d{2}$')) {
     Write-Error "Invalid time format. Use HH:mm (24-hour)."
     exit
 }
+$UserId = "$env:USERNAME"
 
 $TimeParts = $ScheduledTime -split ':'
 $ScheduledHour = [int]$TimeParts[0]
@@ -82,7 +88,8 @@ $TaskXml = @"
   </Triggers>
   <Principals>
     <Principal id="Author">
-      <UserId>SYSTEM</UserId>
+      <UserId>$UserId</UserId>
+      <LogonType>InteractiveToken</LogonType>
       <RunLevel>HighestAvailable</RunLevel>
     </Principal>
   </Principals>
@@ -107,7 +114,7 @@ $TaskXml = @"
   </Settings>
   <Actions Context="Author">
     <Exec>
-      <Command>$PythonExe</Command>
+      <Command>$PythonExeW</Command>
       <Arguments>"$ScriptPath"</Arguments>
       <WorkingDirectory>$ProjectDir</WorkingDirectory>
     </Exec>
