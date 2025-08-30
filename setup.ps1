@@ -60,7 +60,7 @@ if ($addToScheduler -notmatch '^[Yy]$') {
     exit 0
 }
 
-$ScheduledTime = Read-Host "`nEnter the time to run the bot daily (24-hour format, e.g., 14:00)"
+$ScheduledTime = Read-Host "`nEnter the time to run the scraper daily (24-hour format, e.g., 14:00)"
 
 if (-not ($ScheduledTime -match '^\d{1,2}:\d{2}$')) {
     Write-Error "Invalid time format. Use HH:mm (24-hour)."
@@ -122,7 +122,7 @@ $TaskXml = @"
 </Task>
 "@
 
-$TaskFile = "$env:TEMP\DiscordSchedulerTask.xml"
+$TaskFile = "$env:TEMP\RaceOddsScraper.xml"
 $TaskXml | Out-File -Encoding Unicode $TaskFile
 
 schtasks.exe /Create /TN "$TaskName" /XML "$TaskFile" /F
